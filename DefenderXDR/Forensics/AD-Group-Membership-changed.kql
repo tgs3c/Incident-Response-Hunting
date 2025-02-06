@@ -1,0 +1,10 @@
+// Identitfy change of membership (add) in highly privileged AD Groups
+let Groups = dynamic(['Group1', 'Group2']);
+let SearchWindow = 48d; //Customizable h = hours, d = days
+IdentityDirectoryEvents
+| where Timestamp > (now() - SearchWindow)
+| where ActionType == "Group Membership changed"
+| extend Group = parse_json(AdditionalFields).['TO.GROUP']
+| extend GroupAdditionInitiatedBy = parse_json(AdditionalFields).['ACTOR.ACCOUNT']
+| project-reorder Group, GroupAdditionInitiatedBy
+| where Group has_any (Groups)

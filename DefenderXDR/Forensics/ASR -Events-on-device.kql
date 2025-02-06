@@ -1,0 +1,16 @@
+// List of Attack Surface Reduction events on one endpoint
+let targetdevice = "device";
+let SearchWindow = 48h; //Customizable h = hours, d = days
+DeviceEvents
+| where Timestamp > ago(SearchWindow)
+| where DeviceName == targetdevice
+| where ActionType startswith "ASR"
+| project
+     Timestamp,
+     ActionType,
+     FileName,
+     FolderPath,
+     ProcessCommandLine,
+     InitiatingProcessCommandLine,
+     AccountDomain,
+     AccountName

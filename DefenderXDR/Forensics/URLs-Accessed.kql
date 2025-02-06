@@ -1,0 +1,19 @@
+//  Find network events for a single URL
+let LookupURL = "";
+let SearchWindow = 48h;
+let NewtworkEvents = DeviceNetworkEvents
+     | where Timestamp > ago(SearchWindow)
+     | where RemoteUrl contains LookupURL
+     | project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessCommandLine, InitiatingProcessAccountSid;
+let CommandLineReferences = DeviceProcessEvents
+     | where Timestamp > ago(SearchWindow)
+     | where ProcessCommandLine contains LookupURL
+     | project Timestamp, DeviceName, ActionType, FolderPath, ProcessCommandLine, AccountSid;
+(union isfuzzy=true
+     (NewtworkEvents),
+     (CommandLineReferences)
+     | summarize RemoteIPs = make_set(RemoteIP), CommandLines = make_set(ProcessCommandLine), LastMention = arg_max(Timestamp, *) by DeviceName
+     | extend CommandLineReference = iff(CommandLines == @'[""]', false, true)
+     | project-reorder LastMention, DeviceName, RemoteUrl
+     | sort by LastMention
+)

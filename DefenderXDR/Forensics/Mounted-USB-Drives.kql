@@ -1,0 +1,16 @@
+// Find events that launched a browser to open a URL via. Outlook
+let targetdevice = "";
+let SearchWindow = 48h; //Customizable h = hours, d = days
+DeviceEvents
+| where Timestamp > ago(SearchWindow)
+| where DeviceName == targetdevice
+| where ActionType == "BrowserLaunchedToOpenUrl"
+| where InitiatingProcessFileName == "outlook.exe"
+| where RemoteUrl startswith "http"
+| project
+     Timestamp,
+     DeviceName,
+     RemoteUrl,
+     InitiatingProcessFileName,
+     InitiatingProcessCommandLine,
+     InitiatingProcessFolderPath

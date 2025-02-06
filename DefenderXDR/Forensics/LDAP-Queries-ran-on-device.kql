@@ -1,0 +1,15 @@
+// Identitfy LDAP Queries that have been executed on an endpoint
+let CompromisedDevice = "";
+let SearchWindow = 30d; //Customizable h = hours, d = days
+IdentityQueryEvents
+| where Timestamp > ago(SearchWindow)
+| where DeviceName has CompromisedDevice
+| where Protocol == "Ldap"
+| project
+     Timestamp,
+     QueryType,
+     Query,
+     Protocol,
+     DeviceName,
+     DestinationDeviceName,
+     TargetAccountUpn
