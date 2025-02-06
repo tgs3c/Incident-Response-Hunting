@@ -1,3 +1,4 @@
+# PowerShell Script to send a post-request with a hunting query to defender xdr and save the outputs to a csv.
 $ClientId = ""
 $TenantId = ""
 $Thumprint = "" #Certificate Thumbprint for Certificate to use for Client Authentication
